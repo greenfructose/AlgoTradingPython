@@ -4,6 +4,7 @@ import requests
 import xlsxwriter
 import math
 from secrets import IEX_CLOUD_API_TOKEN
+from dry import symbolStrings, sharesToBuy
 
 stocks = pd.read_csv('sp_500_stocks.csv')
 symbol = 'AAPL'
@@ -33,16 +34,7 @@ columns = ['Ticker', 'Stock Price', 'Market Capitalization', 'Number of Shares t
 #     )
 
 
-def chunks(lst, n):
-    """Yield successive n-sized chunks from list"""
-    for i in range(0, len(lst), n):
-        yield lst[i:i + n]
-
-
-symbol_groups = list(chunks(stocks['Ticker'], 100))
-symbol_strings = []
-for i in range(0, len(symbol_groups)):
-    symbol_strings.append(','.join(symbol_groups[i]))
+symbol_strings = symbolStrings(stocks)
 
 df = pd.DataFrame(columns=columns)
 for symbol_string in symbol_strings:
@@ -59,17 +51,19 @@ for symbol_string in symbol_strings:
                 ], index=columns
             ), ignore_index=True
         )
-portfolio_size = input('Enter the value of your portfolio:')
-try:
-    val = float(portfolio_size)
-except ValueError:
-    print('Please enter a number')
-    portfolio_size = input('Enter the value of your portfolio:')
-    val = float(portfolio_size)
 
-position_size = val/len(df.index)
-for i in range(0, len(df.index)):
-    df.loc[i, 'Number of Shares to Buy'] = math.floor(position_size/df.loc[i, 'Stock Price'])
+df = sharesToBuy(df)
+# portfolio_size = input('Enter the value of your portfolio:')
+# try:
+#     val = float(portfolio_size)
+# except ValueError:
+#     print('Please enter a number')
+#     portfolio_size = input('Enter the value of your portfolio:')
+#     val = float(portfolio_size)
+#
+# position_size = val / len(df.index)
+# for i in range(0, len(df.index)):
+#     df.loc[i, 'Number of Shares to Buy'] = math.floor(position_size / df.loc[i, 'Stock Price'])
 
 writer = pd.ExcelWriter('sp500-eqweight-trades.xlsx', engine='xlsxwriter')
 df.to_excel(writer, 'Trades', index=False)
