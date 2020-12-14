@@ -14,7 +14,8 @@ symbol_strings = symbolStrings(stocks)
 columns = ['Ticker', 'Stock Price', 'One-Year Price Return', 'Number of Shares to Buy']
 df = pd.DataFrame(columns=columns)
 for symbol_string in symbol_strings:
-    batch_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch?symbols={symbol_string}&types=price,stats&token={IEX_CLOUD_API_TOKEN}'
+    batch_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch?symbols={symbol_string}&types=price,' \
+                     f'stats&token={IEX_CLOUD_API_TOKEN} '
     data = requests.get(batch_call_url).json()
     for symbol in symbol_string.split(','):
         df = df.append(
