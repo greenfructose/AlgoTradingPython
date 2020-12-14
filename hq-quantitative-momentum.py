@@ -30,8 +30,6 @@ time_periods = [
     'One-Month'
 ]
 df = pd.DataFrame(columns=columns)
-convert_none = lambda x: 0 if x is None else x
-
 for symbol_string in symbol_strings:
     batch_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch?symbols={symbol_string}&types=price,' \
                      f'stats&token={IEX_CLOUD_API_TOKEN}'
