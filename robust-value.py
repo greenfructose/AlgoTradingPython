@@ -97,7 +97,7 @@ metrics = {
 
 for metric in metrics.keys():
     for row in df.index:
-        df.loc[row, metrics[metric]] = stats.percentileofscore(df[metric], df.loc[row, metric])
+        df.loc[row, metrics[metric]] = stats.percentileofscore(df[metric], df.loc[row, metric])/100
 
 for row in df.index:
     value_percentiles = []
@@ -111,7 +111,80 @@ df.reset_index(inplace=True, drop=True)
 df = df[:50]
 df = sharesToBuy(df)
 
-print(df)
+writer = pd.ExcelWriter('value_strategy.xlsx', engine='xlsxwriter')
+df.to_excel(writer, sheet_name='Value Strategy', index=False)
+background_color = '#0a0a23'
+font_color = '#ffffff'
+header_format = writer.book.add_format(
+    {
+        'font_color': font_color,
+        'bg_color': '#15154B',
+        'border': 1,
+        'align': 'center',
+        'bold': True
+    }
+)
+string_format = writer.book.add_format(
+    {
+        'font_color': font_color,
+        'bg_color': background_color,
+        'border': 1
+    }
+)
+dollar_format = writer.book.add_format(
+    {
+        'num_format': '$0.00',
+        'font_color': font_color,
+        'bg_color': background_color,
+        'border': 1
+    }
+)
+integer_format = writer.book.add_format(
+    {
+        'num_format': '0',
+        'font_color': font_color,
+        'bg_color': background_color,
+        'border': 1
+    }
+)
+float_format = writer.book.add_format(
+    {
+        'num_format': '0.00',
+        'font_color': font_color,
+        'bg_color': background_color,
+        'border': 1
+    }
+)
+percent_format = writer.book.add_format(
+    {
+        'num_format': '0.00%',
+        'font_color': font_color,
+        'bg_color': background_color,
+        'border': 1
+    }
+)
+column_formats = {
+    'A': ['Ticker', string_format],
+    'B': ['Stock Price', dollar_format],
+    'C': ['Price-to-Earnings Ratio', float_format],
+    'D': ['PE Percentile', percent_format],
+    'E': ['Price-to-Book Ratio', float_format],
+    'F': ['PB Percentile', percent_format],
+    'G': ['Price-to-Sales Ratio', float_format],
+    'H': ['PS Percentile', percent_format],
+    'I': ['Enterprise-Value/EBITDA', float_format],
+    'J': ['EV/EBITDA Percentile', percent_format],
+    'K': ['Enterprise-Value/Gross-Profit', float_format],
+    'L': ['EV/GP Percentile', integer_format],
+    'M': ['RV Score', float_format],
+    'N': ['Number of Shares to Buy', integer_format]
+}
+
+for column in column_formats.keys():
+    writer.sheets['Value Strategy'].set_column(f'{column}:{column}', 25, column_formats[column][1])
+    writer.sheets['Value Strategy'].write(f'{column}1', column_formats[column][0], header_format)
+
+writer.save()
 bad_data = []
 for item in missing_data:
     if item['stock'] not in bad_data:
