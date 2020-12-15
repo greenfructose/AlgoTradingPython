@@ -35,7 +35,7 @@ numeric_data_columns = [
 missing_data = []
 df = pd.DataFrame(columns=columns)
 for symbol_string in symbol_strings:
-    batch_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch/?types=quote,advanced-stats&symbols={symbol_string}&token={IEX_CLOUD_API_TOKEN}'
+    batch_call_url = f'https://cloud.iexapis.com/stable/stock/market/batch/?types=quote,advanced-stats&symbols={symbol_string}&token={IEX_CLOUD_API_TOKEN}'
     data = requests.get(batch_call_url).json()
     for symbol in symbol_string.split(','):
         enterprise_value = data[symbol]['advanced-stats']['enterpriseValue']
@@ -77,7 +77,7 @@ for symbol_string in symbol_strings:
                     ev_to_gp,
                     'N/A',
                     'N/A',
-                    'N/A'
+                    0
                 ],
                 index=columns
             ),
@@ -108,8 +108,6 @@ for row in df.index:
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 df.sort_values('RV Score', inplace=True, ascending=False)
 df.reset_index(inplace=True, drop=True)
-df = df[:50]
-df = sharesToBuy(df)
 
 writer = pd.ExcelWriter('value_strategy.xlsx', engine='xlsxwriter')
 df.to_excel(writer, sheet_name='Value Strategy', index=False)

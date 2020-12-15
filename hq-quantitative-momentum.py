@@ -31,7 +31,7 @@ time_periods = [
 ]
 df = pd.DataFrame(columns=columns)
 for symbol_string in symbol_strings:
-    batch_call_url = f'https://sandbox.iexapis.com/stable/stock/market/batch?symbols={symbol_string}&types=price,' \
+    batch_call_url = f'https://cloud.iexapis.com/stable/stock/market/batch?symbols={symbol_string}&types=price,' \
                      f'stats&token={IEX_CLOUD_API_TOKEN}'
     data = requests.get(batch_call_url).json()
     for symbol in symbol_string.split(','):
@@ -49,7 +49,7 @@ for symbol_string in symbol_strings:
                     data[symbol]['stats']['month1ChangePercent'],
                     'N/A',
                     'N/A',
-                    'N/A'
+                    0
                 ],
                 index=columns
             ),
@@ -71,9 +71,7 @@ for row in df.index:
 
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 df.sort_values('HQM Score', ascending=False, inplace=True)
-df = df[:50]
 df.reset_index(inplace=True, drop=True)
-df = sharesToBuy(df)
 
 writer = pd.ExcelWriter('momentum_strategy.xlsx', engine='xlsxwriter')
 df.to_excel(writer, sheet_name='Momentum Strategy', index=False)
