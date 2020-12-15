@@ -4,6 +4,7 @@ import requests
 from scipy import stats
 from statistics import mean
 import xlsxwriter
+import datetime as dt
 from secrets import IEX_CLOUD_API_TOKEN
 from dry import symbolStrings, sharesToBuy
 
@@ -21,7 +22,8 @@ columns = [
     'One-Month Return',
     'One-Month Return Percentile',
     'HQM Score',
-    'Number of Shares to Buy'
+    'Number of Shares to Buy',
+    'Date of Quote'
 ]
 time_periods = [
     'One-Year',
@@ -49,7 +51,8 @@ for symbol_string in symbol_strings:
                     data[symbol]['stats']['month1ChangePercent'],
                     'N/A',
                     'N/A',
-                    0
+                    0,
+                    dt.date.today().strftime("%m/%d/%Y")
                 ],
                 index=columns
             ),
@@ -129,7 +132,8 @@ column_formats = {
     'I': ['One-Month Return', percent_format],
     'J': ['One-Month Return Percentile', percent_format],
     'K': ['HQM Score', percent_format],
-    'L': ['Number of Shares to Buy', integer_format]
+    'L': ['Number of Shares to Buy', integer_format],
+    'M': ['Date of Quote', string_format]
 }
 
 for column in column_formats.keys():

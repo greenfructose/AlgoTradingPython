@@ -4,6 +4,7 @@ import requests
 from scipy import stats
 from statistics import mean
 import xlsxwriter
+import datetime as dt
 from secrets import IEX_CLOUD_API_TOKEN
 from dry import symbolStrings, sharesToBuy
 
@@ -23,7 +24,8 @@ columns = [
     'Enterprise-Value/Gross-Profit',
     'EV/GP Percentile',
     'RV Score',
-    'Number of Shares to Buy'
+    'Number of Shares to Buy',
+    'Date of Quote'
 ]
 numeric_data_columns = [
     'Price-to-Earnings Ratio',
@@ -77,7 +79,8 @@ for symbol_string in symbol_strings:
                     ev_to_gp,
                     'N/A',
                     'N/A',
-                    0
+                    0,
+                    dt.date.today().strftime("%m/%d/%Y")
                 ],
                 index=columns
             ),
@@ -175,7 +178,8 @@ column_formats = {
     'K': ['Enterprise-Value/Gross-Profit', float_format],
     'L': ['EV/GP Percentile', integer_format],
     'M': ['RV Score', float_format],
-    'N': ['Number of Shares to Buy', integer_format]
+    'N': ['Number of Shares to Buy', integer_format],
+    'O': ['Date of Quote', string_format]
 }
 
 for column in column_formats.keys():

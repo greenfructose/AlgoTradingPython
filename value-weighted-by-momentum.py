@@ -18,7 +18,9 @@ columns = [
     'HQM by RV Score',
     'HQM by RV Percentile',
     'Number of Shares to Buy',
-    'Date of Quote'
+    'Date of HQM Quote',
+    'Date of RV Quote',
+    'Date of HQM by RV Quote'
 ]
 
 vs_by_ms_df = pd.DataFrame(columns=columns)
@@ -36,6 +38,8 @@ for symbol in list(stocks['Ticker']):
                 mean([ms_df.loc[symbol].at['HQM Score'], vs_df.loc[symbol].at['RV Score']]),
                 'N/A',
                 0,
+                ms_df.loc[symbol].at['Date of Quote'],
+                vs_df.loc[symbol].at['Date of Quote'],
                 dt.date.today().strftime("%m/%d/%Y")
             ],
             index=columns
@@ -115,7 +119,9 @@ column_formats = {
     'E': ['HQM by RV Score', float_format],
     'F': ['HQM by RV Percentile', percent_format],
     'G': ['Number of Shares to Buy', integer_format],
-    'H': ['Date of Quote', string_format]
+    'H': ['Date of HQM Quote', string_format],
+    'I': ['Date of RV Quote', string_format],
+    'J': ['Date of HQM by RV Quote', string_format]
 }
 
 for column in column_formats.keys():
