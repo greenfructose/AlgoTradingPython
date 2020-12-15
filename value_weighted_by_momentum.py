@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from statistics import mean
 from scipy import stats
+import datetime as dt
 
 stocks = pd.read_csv('sp_500_stocks.csv')
 ms_df = pd.read_excel('momentum_strategy.xlsx', engine='openpyxl')
@@ -16,7 +17,8 @@ columns = [
     'RV Score',
     'HQM by RV Score',
     'HQM by RV Percentile',
-    'Number of Shares to Buy'
+    'Number of Shares to Buy',
+    'Date of Quote'
 ]
 
 vs_by_ms_df = pd.DataFrame(columns=columns)
@@ -33,7 +35,8 @@ for symbol in list(stocks['Ticker']):
                 vs_df.loc[symbol].at['RV Score'],
                 mean([ms_df.loc[symbol].at['HQM Score'], vs_df.loc[symbol].at['RV Score']]),
                 'N/A',
-                0
+                0,
+                dt.date.today().strftime("%m/%d/%Y")
             ],
             index=columns
         ),
@@ -51,7 +54,6 @@ pd.set_option("display.max_rows", 10, "display.max_columns", None)
 vs_by_ms_df.sort_values('HQM by RV Score', inplace=True, ascending=False)
 vs_by_ms_df.reset_index(inplace=True, drop=True)
 vs_by_ms_df = vs_by_ms_df[columns]
-print(vs_by_ms_df)
 
 writer = pd.ExcelWriter('value_by_momentum_strategy.xlsx', engine='xlsxwriter')
 vs_by_ms_df.to_excel(writer, sheet_name='Value by Momentum Strategy', index=False)
@@ -112,7 +114,8 @@ column_formats = {
     'D': ['RV Score', float_format],
     'E': ['HQM by RV Score', float_format],
     'F': ['HQM by RV Percentile', percent_format],
-    'G': ['Number of Shares to Buy', integer_format]
+    'G': ['Number of Shares to Buy', integer_format],
+    'H': ['Date of Quote', string_format]
 }
 
 for column in column_formats.keys():
