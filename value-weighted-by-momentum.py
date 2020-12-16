@@ -3,6 +3,7 @@ import numpy as np
 from statistics import mean
 from scipy import stats
 import datetime as dt
+from dry import sharesToBuy
 
 stocks = pd.read_csv('sp_500_stocks.csv')
 ms_df = pd.read_excel('momentum_strategy.xlsx', engine='openpyxl')
@@ -58,7 +59,8 @@ pd.set_option("display.max_rows", 10, "display.max_columns", None)
 vs_by_ms_df.sort_values('HQM by RV Score', inplace=True, ascending=False)
 vs_by_ms_df.reset_index(inplace=True, drop=True)
 vs_by_ms_df = vs_by_ms_df[columns]
-
+vs_by_ms_df = vs_by_ms_df[:10]
+vs_by_ms_df = sharesToBuy(vs_by_ms_df)
 writer = pd.ExcelWriter('value_by_momentum_strategy.xlsx', engine='xlsxwriter')
 vs_by_ms_df.to_excel(writer, sheet_name='Value by Momentum Strategy', index=False)
 background_color = '#0a0a23'

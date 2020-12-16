@@ -26,5 +26,5 @@ def sharesToBuy(df):
 
     position_size = val / len(df.index)
     for i in range(0, len(df.index)):
-        df.loc[i, 'Number of Shares to Buy'] = math.floor(position_size / df.loc[i, 'Stock Price'])
+        df.loc[i, 'Number of Shares to Buy'] = math.floor(position_size / df.loc[i, 'Price'])
     return df
